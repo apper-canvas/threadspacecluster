@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useAuth } from "@/contexts/AuthContext";
 import { CommunityService } from "@/services/api/communityService";
 import { PostService } from "@/services/api/postService";
 import { cn } from "@/utils/cn";
@@ -11,6 +12,7 @@ import Input from "@/components/atoms/Input";
 import Textarea from "@/components/atoms/Textarea";
 
 const CreatePostModal = ({ isOpen, onClose }) => {
+  const { user } = useAuth();
 const [formData, setFormData] = useState({
     title: "",
     content: "",
@@ -121,7 +123,7 @@ const newPost = {
         title: formData.title.trim(),
         content: formData.postType === 'text' ? formData.content.trim() : '',
         community: formData.community,
-        author: "currentUser",
+author: user?.username || "Anonymous",
         timestamp: new Date().toISOString(),
         score: 1,
         userVote: 1,

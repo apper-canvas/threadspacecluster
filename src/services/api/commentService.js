@@ -41,12 +41,16 @@ class CommentService {
     return { ...comment };
   }
 
-  async create(commentData) {
+async create(commentData) {
+    if (!commentData.author) {
+      throw new Error('Author is required');
+    }
+
     const newComment = {
       id: Math.max(0, ...this.comments.map(c => c.id)) + 1,
       postId: parseInt(commentData.postId),
       parentId: commentData.parentId ? parseInt(commentData.parentId) : null,
-      author: commentData.author || 'Anonymous',
+      author: commentData.author,
       content: commentData.content.trim(),
       timestamp: new Date().toISOString(),
       score: 0

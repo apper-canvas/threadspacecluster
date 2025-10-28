@@ -1,13 +1,27 @@
-import usersData from '@/services/mockData/users.json';
-import { PostService } from '@/services/api/postService';
+import usersData from "@/services/mockData/users.json";
 
 let users = [...usersData];
 let nextId = Math.max(...users.map(u => u.Id), 0) + 1;
 
+// Helper to calculate karma from posts and comments
 const calculateUserKarma = (username) => {
-  const allPosts = PostService.getAll();
-  const userPosts = allPosts.filter(post => post.author === username);
-  return userPosts.reduce((total, post) => total + (post.score || 0), 0);
+  // Import here to avoid circular dependency
+  const { PostService } = require('@/services/api/postService');
+  const { CommentService } = require('@/services/api/commentService');
+  
+  try {
+    const commentService = new CommentService();
+    const userComments = commentService.comments.filter(c => c.author === username);
+    const commentKarma = userComments.reduce((sum, c) => sum + (c.score || 0), 0);
+    
+    const allPosts = PostService.posts || [];
+    const userPosts = allPosts.filter(p => p.author === username);
+    const postKarma = userPosts.reduce((sum, p) => sum + (p.score || 0), 0);
+    
+    return postKarma + commentKarma;
+  } catch (error) {
+    return 0;
+  }
 };
 
 export const UserService = {
@@ -44,6 +58,42 @@ export const UserService = {
       ...user,
       karma: calculateUserKarma(user.username)
     };
+  },
+
+  getUserActivity(username) {
+    const { PostService } = require('@/services/api/postService');
+    const { CommentService } = require('@/services/api/commentService');
+    
+    try {
+      const commentService = new CommentService();
+      const allPosts = PostService.posts || [];
+      const userPosts = allPosts.filter(p => p.author === username);
+      const userComments = commentService.comments.filter(c => c.author === username);
+      
+      return {
+        posts: userPosts,
+        comments: userComments,
+        totalActivity: userPosts.length + userComments.length
+      };
+    } catch (error) {
+      return { posts: [], comments: [], totalActivity: 0 };
+    }
+  },
+
+  getCommentsByUser(username) {
+    const { CommentService } = require('@/services/api/commentService');
+    try {
+      const commentService = new CommentService();
+      return commentService.comments.filter(c => c.author === username);
+    } catch (error) {
+      return [];
+    }
+  },
+
+  getVotesByUser(username) {
+    // In a real app, this would fetch vote history from backend
+    // For now, return empty array as votes are stored per-post/comment
+    return [];
   },
 
   create(userData) {

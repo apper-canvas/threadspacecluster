@@ -1,23 +1,26 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { formatDistanceToNow } from 'date-fns';
-import { UserService } from '@/services/api/userService';
-import { PostService } from '@/services/api/postService';
-import { CommunityService } from '@/services/api/communityService';
-import PostCard from '@/components/organisms/PostCard';
-import Loading from '@/components/ui/Loading';
-import Error from '@/components/ui/Error';
-import Empty from '@/components/ui/Empty';
-import ApperIcon from '@/components/ApperIcon';
-import Button from '@/components/atoms/Button';
-import { toast } from 'react-toastify';
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { formatDistanceToNow } from "date-fns";
+import { UserService } from "@/services/api/userService";
+import { toast } from "react-toastify";
+import { PostService } from "@/services/api/postService";
+import { CommunityService } from "@/services/api/communityService";
+import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
+import Communities from "@/components/pages/Communities";
+import PostCard from "@/components/organisms/PostCard";
+import Loading from "@/components/ui/Loading";
+import Empty from "@/components/ui/Empty";
+import Error from "@/components/ui/Error";
 
 const UserProfile = () => {
   const { username } = useParams();
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+const [user, setUser] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
+  const [userComments, setUserComments] = useState([]);
   const [userCommunities, setUserCommunities] = useState([]);
+  const [activeTab, setActiveTab] = useState('posts');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -30,7 +33,7 @@ const loadUserProfile = async () => {
       setLoading(true);
       setError(null);
 
-      const userData = UserService.getByUsername(username);
+      const userData = await UserService.getByUsername(username);
       if (!userData) {
         setError('User not found');
         setLoading(false);
@@ -40,6 +43,8 @@ const loadUserProfile = async () => {
       const allPosts = await PostService.getAll();
       const posts = allPosts.filter(post => post.author === username);
 
+      const comments = UserService.getCommentsByUser(username);
+
       const communityNames = [...new Set(posts.map(post => post.community))];
       const communities = await Promise.all(
         communityNames.map(name => CommunityService.getByName(name))
@@ -48,6 +53,7 @@ const loadUserProfile = async () => {
 
       setUser(userData);
       setUserPosts(posts);
+      setUserComments(comments);
       setUserCommunities(validCommunities);
     } catch (err) {
       setError('Failed to load user profile');
@@ -138,19 +144,102 @@ const loadUserProfile = async () => {
         </div>
       </div>
 
-      <div className="space-y-6">
-        <div>
-          <h2 className="text-xl font-bold text-secondary mb-4">Posts</h2>
-          {userPosts.length === 0 ? (
-            <Empty message="No posts yet" />
-          ) : (
+<div className="bg-surface rounded-lg shadow-sm border border-gray-200 mb-6">
+        <div className="flex border-b border-gray-200">
+          <button
+            onClick={() => setActiveTab('posts')}
+            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+              activeTab === 'posts'
+                ? 'text-primary border-b-2 border-primary'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Posts ({userPosts.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('comments')}
+            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+              activeTab === 'comments'
+                ? 'text-primary border-b-2 border-primary'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Comments ({userComments.length})
+          </button>
+          <button
+            onClick={() => setActiveTab('activity')}
+            className={`flex-1 px-4 py-3 text-sm font-medium transition-colors ${
+              activeTab === 'activity'
+                ? 'text-primary border-b-2 border-primary'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Activity
+          </button>
+        </div>
+
+        <div className="p-6">
+          {activeTab === 'posts' && (
+            <div>
+              {userPosts.length === 0 ? (
+                <Empty message="No posts yet" />
+              ) : (
+                <div className="space-y-4">
+                  {userPosts.map(post => (
+                    <PostCard key={post.Id} post={post} onVote={handleVote} />
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'comments' && (
+            <div>
+              {userComments.length === 0 ? (
+                <Empty message="No comments yet" />
+              ) : (
+                <div className="space-y-4">
+                  {userComments.map(comment => (
+                    <div key={comment.id} className="border-b border-gray-200 pb-4 last:border-0">
+                      <div className="flex items-start gap-3">
+                        <div className="flex flex-col items-center gap-1">
+                          <button className="text-gray-400 hover:text-primary p-1">
+                            <ApperIcon name="ArrowUp" size={16} />
+                          </button>
+                          <span className="text-sm font-medium">{comment.score}</span>
+                          <button className="text-gray-400 hover:text-accent p-1">
+                            <ApperIcon name="ArrowDown" size={16} />
+                          </button>
+                        </div>
+                        <div className="flex-1">
+                          <div className="text-xs text-gray-500 mb-2">
+                            Commented {formatDistanceToNow(new Date(comment.timestamp), { addSuffix: true })}
+                          </div>
+                          <p className="text-gray-700">{comment.content}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {activeTab === 'activity' && (
             <div className="space-y-4">
-              {userPosts.map(post => (
-                <PostCard key={post.Id} post={post} onVote={handleVote} />
-              ))}
+              <div className="text-center py-8">
+                <ApperIcon name="Activity" size={48} className="mx-auto text-gray-300 mb-3" />
+                <p className="text-gray-600">
+                  Activity tracking coming soon
+                </p>
+                <p className="text-sm text-gray-500 mt-1">
+                  This will show a combined timeline of posts, comments, and votes
+                </p>
+              </div>
             </div>
           )}
         </div>
+      </div>
 
         <div>
           <h2 className="text-xl font-bold text-secondary mb-4">Communities</h2>

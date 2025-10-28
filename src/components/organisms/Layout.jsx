@@ -1,16 +1,16 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import Header from "@/components/organisms/Header";
-import Sidebar from "@/components/organisms/Sidebar";
-import CreatePostModal from "@/components/organisms/CreatePostModal";
+import LoginModal from "@/components/organisms/LoginModal";
 import ApperIcon from "@/components/ApperIcon";
+import CreatePostModal from "@/components/organisms/CreatePostModal";
+import Sidebar from "@/components/organisms/Sidebar";
+import Header from "@/components/organisms/Header";
 import { cn } from "@/utils/cn";
-
 const Layout = () => {
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
   useEffect(() => {
     if (isMobileSidebarOpen) {
       document.body.style.overflow = "hidden";
@@ -32,8 +32,12 @@ const Layout = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header onSearch={handleSearch} onCreatePost={handleCreatePost} />
+<div className="min-h-screen bg-background">
+      <Header 
+        onSearch={handleSearch} 
+        onCreatePost={handleCreatePost}
+        onLoginClick={() => setIsLoginOpen(true)}
+      />
       
       <div className="flex">
         {/* Desktop Sidebar */}
@@ -85,9 +89,14 @@ const Layout = () => {
         </div>
       </div>
 
-      <CreatePostModal
+<CreatePostModal
         isOpen={isCreatePostOpen}
         onClose={() => setIsCreatePostOpen(false)}
+      />
+
+      <LoginModal
+        isOpen={isLoginOpen}
+        onClose={() => setIsLoginOpen(false)}
       />
     </div>
   );

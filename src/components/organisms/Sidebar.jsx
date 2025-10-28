@@ -1,19 +1,20 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import React from "react";
+import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/utils/cn";
 import ApperIcon from "@/components/ApperIcon";
 import Communities from "@/components/pages/Communities";
-
 const Sidebar = ({ className, isMobile = false, onItemClick }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
 
 const navigationItems = [
     { path: "", label: "Home", icon: "Home" },
     { path: "popular", label: "Popular", icon: "TrendingUp" },
     { path: "saved", label: "Saved", icon: "Bookmark" },
     { path: "communities", label: "Communities", icon: "Users" },
-    { path: "user/techEnthusiast", label: "Profile", icon: "User" }
+    { path: user ? `user/${user.username}` : "user/guest", label: "Profile", icon: "User" }
   ];
 
   const handleNavigation = (path) => {

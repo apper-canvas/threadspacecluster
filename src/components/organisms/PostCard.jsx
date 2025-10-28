@@ -2,11 +2,14 @@ import { formatDistanceToNow } from "date-fns";
 import { Link, useNavigate } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { PostService } from "@/services/api/postService";
-import { cn } from "@/utils/cn";
+import { useAuth } from "@/contexts/AuthContext";
+import { PostService, isSaved, toggleSave } from "@/services/api/postService";
 import ApperIcon from "@/components/ApperIcon";
 import VoteButtons from "@/components/molecules/VoteButtons";
+import { cn } from "@/utils/cn";
 const PostCard = ({ post, onVote }) => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const timeAgo = formatDistanceToNow(new Date(post.timestamp), { addSuffix: true });
   const [isSaved, setIsSaved] = useState(false);
 
@@ -22,11 +25,9 @@ const PostCard = ({ post, onVote }) => {
     e.preventDefault();
     e.stopPropagation();
     const result = await PostService.toggleSave(post.id);
-    setIsSaved(result.saved);
+setIsSaved(result.saved);
     toast.success(result.saved ? 'Post saved!' : 'Post unsaved');
   };
-
-const navigate = useNavigate();
 
   return (
     <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 transition-all duration-200 hover:post-card-hover group">
@@ -46,7 +47,14 @@ const navigate = useNavigate();
               r/{post.community}
             </span>
             <span>•</span>
-            <span>Posted by u/{post.author}</span>
+<span>Posted by</span>
+            <Link 
+              to={`/user/${post.author}`}
+              className="hover:underline font-medium text-gray-900"
+              onClick={(e) => e.stopPropagation()}
+            >
+              u/{post.author}
+            </Link>
             <span>•</span>
             <span>{timeAgo}</span>
           </div>

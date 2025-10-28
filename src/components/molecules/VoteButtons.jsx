@@ -4,12 +4,15 @@ import ApperIcon from "@/components/ApperIcon";
 
 const VoteButtons = ({ score, userVote, onVote, postId }) => {
   const [isAnimating, setIsAnimating] = useState(false);
-
-  const handleVote = (voteValue) => {
+const handleVote = (voteValue) => {
     if (isAnimating) return;
     
     setIsAnimating(true);
-    onVote(postId, voteValue);
+    if (postId) {
+      onVote(postId, voteValue);
+    } else {
+      onVote(voteValue);
+    }
     
     setTimeout(() => {
       setIsAnimating(false);
