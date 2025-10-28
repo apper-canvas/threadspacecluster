@@ -140,11 +140,11 @@ const loadUserProfile = async () => {
           <div className="p-4 text-center">
             <div className="text-2xl font-bold text-success">{userCommunities.length}</div>
             <div className="text-sm text-gray-600">Communities</div>
-          </div>
+</div>
         </div>
       </div>
 
-<div className="bg-surface rounded-lg shadow-sm border border-gray-200 mb-6">
+      <div className="bg-surface rounded-lg shadow-sm border border-gray-200 mb-6">
         <div className="flex border-b border-gray-200">
           <button
             onClick={() => setActiveTab('posts')}
@@ -241,32 +241,31 @@ const loadUserProfile = async () => {
         </div>
       </div>
 
-        <div>
-          <h2 className="text-xl font-bold text-secondary mb-4">Communities</h2>
-          {userCommunities.length === 0 ? (
-            <Empty message="Not active in any communities yet" />
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {userCommunities.map(community => (
-                <button
-                  key={community.Id}
-                  onClick={() => handleCommunityClick(community.name)}
-                  className="bg-surface p-4 rounded-lg border border-gray-200 hover:border-primary hover:shadow-md transition-all text-left"
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold text-lg">
-                      {community.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div className="flex-1">
-                      <div className="font-semibold text-secondary">r/{community.name}</div>
-                      <div className="text-sm text-gray-600">{community.memberCount.toLocaleString()} members</div>
-                    </div>
+      <div>
+        <h2 className="text-xl font-bold text-secondary mb-4">Communities</h2>
+        {userCommunities.length === 0 ? (
+          <Empty message="Not active in any communities yet" />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {userCommunities.map(community => (
+              <button
+                key={community.Id}
+                onClick={() => handleCommunityClick(community.name)}
+                className="bg-surface p-4 rounded-lg border border-gray-200 hover:border-primary hover:shadow-md transition-all text-left"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center text-white font-bold text-lg">
+                    {community.name.charAt(0).toUpperCase()}
                   </div>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+                  <div className="flex-1">
+                    <div className="font-semibold text-secondary">r/{community.name}</div>
+                    <div className="text-sm text-gray-600">{community.memberCount.toLocaleString()} members</div>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
