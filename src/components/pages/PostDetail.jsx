@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { toast } from "react-toastify";
 import { PostService } from "@/services/api/postService";
-import { CommentService } from "@/services/api/commentService";
+import CommentService from "@/services/api/commentService";
 import { cn } from "@/utils/cn";
 import ApperIcon from "@/components/ApperIcon";
 import Loading from "@/components/ui/Loading";
@@ -120,15 +120,14 @@ async function handleVote(postId, voteValue) {
   }
 
   async function handleCommentVote(commentId, voteValue) {
-    try {
-      const comment = comments.find(c => c.Id === commentId);
+try {
+      const comment = comments.find(c => c.id === commentId);
       if (!comment) return;
 
-      const newScore = comment.score + voteValue;
-      await CommentService.updateScore(commentId, newScore);
+      await CommentService.vote(commentId, voteValue > 0 ? 'up' : 'down');
       
       setComments(prev => prev.map(c => 
-        c.Id === commentId ? { ...c, score: newScore } : c
+        c.id === commentId ? { ...c, score: c.score + voteValue } : c
       ));
       
       toast.success('Vote updated');
