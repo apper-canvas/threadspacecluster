@@ -409,10 +409,10 @@ function CommentCard({ comment, replies, allComments, onVote, onReply, replyingT
   function buildNestedReplies(commentId) {
     return allComments.filter(c => c.parentId === commentId);
   }
-  return (
+return (
     <div className={`${depth > 0 ? 'ml-8 pl-4 border-l-2 border-gray-200' : ''}`}>
-      <div className="py-3">
-<div className="flex items-start gap-3">
+      <div className="py-3 bg-gray-50 rounded-lg border border-gray-200 px-4">
+        <div className="flex items-start gap-3">
           <VoteButtons
             score={comment.score}
             onVote={(voteValue) => onVote(comment.Id, voteValue)}
@@ -474,18 +474,18 @@ function CommentCard({ comment, replies, allComments, onVote, onReply, replyingT
           </form>
         )}
         
-        {replies && replies.length > 0 && (
-          <div className="mt-4 pl-12 border-l-2 border-gray-200">
+{replies && replies.length > 0 && (
+          <div className="mt-4">
             <button
               onClick={() => setShowReplies(!showReplies)}
-              className="text-sm text-primary hover:text-primary/80 font-medium flex items-center gap-1 mb-3"
+              className="text-sm text-accent hover:text-accent/80 font-medium flex items-center gap-1 mb-3 transition-colors"
             >
-              <ApperIcon name={showReplies ? "ChevronUp" : "ChevronDown"} size={14} />
+              <ApperIcon name={showReplies ? "ChevronUp" : "ChevronDown"} size={16} />
               {showReplies ? 'Hide' : 'Show'} {replies.length} {replies.length === 1 ? 'reply' : 'replies'}
             </button>
             
             {showReplies && (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {replies.map(reply => (
                   <CommentCard
                     key={reply.Id}
