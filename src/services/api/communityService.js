@@ -122,4 +122,3 @@ static async delete(id) {
     return joined.includes(communityId);
   }
 }
-}

@@ -99,8 +99,7 @@ return (
                   {isJoined ? "Joined" : "Join"}
                 </Button>
               </div>
-            
-            <h3 className="font-bold text-lg text-gray-900 mb-2">
+<h3 className="font-bold text-lg text-gray-900 mb-2">
               r/{community.name}
             </h3>
             
@@ -108,21 +107,20 @@ return (
               {community.description}
             </p>
             
-<div className="flex items-center gap-4 text-sm text-gray-500">
-                <div className="flex items-center gap-1">
-                  <ApperIcon name="Users" size={14} />
-                  <span>{community.memberCount?.toLocaleString() || 0} members</span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <ApperIcon name="MessageSquare" size={14} />
-                  <span>{community.postCount || 0} posts</span>
-                </div>
+            <div className="flex items-center gap-4 text-sm text-gray-500">
+              <div className="flex items-center gap-1">
+                <ApperIcon name="Users" size={14} />
+                <span>{community.memberCount?.toLocaleString() || 0} members</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <ApperIcon name="MessageSquare" size={14} />
+                <span>{community.postCount || 0} posts</span>
               </div>
             </div>
-          );
-        })}
           </div>
-        ))}
+        );
+      })}
+        </div>
       </div>
     </div>
   );
