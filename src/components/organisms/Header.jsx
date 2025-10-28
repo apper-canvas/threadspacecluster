@@ -1,10 +1,12 @@
-import { useState, useRef, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
-import { toast } from "react-toastify";
-import ApperIcon from "@/components/ApperIcon";
-import SearchBar from "@/components/molecules/SearchBar";
-import Button from "@/components/atoms/Button";
+import { useState, useRef, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '@/contexts/AuthContext'
+import { toast } from 'react-toastify'
+import ApperIcon from '@/components/ApperIcon'
+import SearchBar from '@/components/molecules/SearchBar'
+import Button from '@/components/atoms/Button'
+import Select from '@/components/atoms/Select'
+import { CommunityService } from '@/services/api/communityService'
 const Header = ({ onCreatePost, onLoginClick }) => {
   const navigate = useNavigate();
   const { user, logout } = useAuth();

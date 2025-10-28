@@ -16,8 +16,13 @@ const CommunityDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [showCreatePost, setShowCreatePost] = useState(false);
-  const [joined, setJoined] = useState(false);
+const [joined, setJoined] = useState(false);
 
+  useEffect(() => {
+    if (community) {
+      setJoined(CommunityService.isJoined(community.id));
+    }
+  }, [community]);
   useEffect(() => {
     const fetchCommunity = async () => {
       try {
@@ -43,14 +48,17 @@ const CommunityDetail = () => {
   }, [communityName]);
 
   const handleJoin = () => {
-    setJoined(!joined);
-    toast.success(
-      joined
-        ? `Left r/${community.name}`
-        : `Joined r/${community.name}! Welcome to the community.`
-    );
+const newJoinedState = !joined;
+    setJoined(newJoinedState);
+    
+    if (newJoinedState) {
+      CommunityService.joinCommunity(community.id);
+      toast.success(`Joined r/${community.name}! Welcome to the community.`);
+    } else {
+      CommunityService.leaveCommunity(community.id);
+      toast.info(`Left r/${community.name}`);
+    }
   };
-
   const handleCreatePost = (postData) => {
     toast.success("Post created successfully!");
     setShowCreatePost(false);
@@ -79,11 +87,11 @@ const CommunityDetail = () => {
 
   return (
     <div className="pb-20 lg:pb-6">
-      {/* Community Banner */}
+{/* Community Banner */}
       <div className="bg-gradient-to-r from-primary to-orange-600 text-white rounded-xl shadow-lg p-8 mb-6">
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-3 mb-3">
+            <div className="flex items-center gap-4 mb-3">
               <button
                 onClick={() => navigate("/communities")}
                 className="p-2 hover:bg-white/20 rounded-lg transition-colors"
@@ -91,6 +99,12 @@ const CommunityDetail = () => {
               >
                 <ApperIcon name="ArrowLeft" size={20} />
               </button>
+              <div
+                className="w-16 h-16 rounded-xl flex items-center justify-center text-white shadow-lg"
+                style={{ backgroundColor: community.color }}
+              >
+                <ApperIcon name={community.icon || "Users"} size={32} />
+              </div>
               <h1 className="text-3xl font-bold truncate">r/{community.name}</h1>
             </div>
             <p className="text-white/90 text-lg mb-4 leading-relaxed">

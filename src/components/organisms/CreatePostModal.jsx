@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
-import { useAuth } from "@/contexts/AuthContext";
-import { CommunityService } from "@/services/api/communityService";
 import { PostService } from "@/services/api/postService";
-import { cn } from "@/utils/cn";
+import { CommunityService } from "@/services/api/communityService";
 import ApperIcon from "@/components/ApperIcon";
-import TagInput from "@/components/atoms/TagInput";
-import Button from "@/components/atoms/Button";
 import Select from "@/components/atoms/Select";
+import Button from "@/components/atoms/Button";
 import Input from "@/components/atoms/Input";
 import Textarea from "@/components/atoms/Textarea";
+import TagInput from "@/components/atoms/TagInput";
+import { cn } from "@/utils/cn";
+import { useAuth } from "@/contexts/AuthContext";
 
-const CreatePostModal = ({ isOpen, onClose }) => {
-  const { user } = useAuth();
-const [formData, setFormData] = useState({
+const CreatePostModal = ({ isOpen, onClose, preSelectedCommunity }) => {
+const { user } = useAuth();
+  const [formData, setFormData] = useState({
     title: "",
     content: "",
-    community: "",
+    community: preSelectedCommunity || "",
     tags: [],
     postType: "text",
-imageUrl: null,
+    imageUrl: null,
     linkUrl: "",
     pollOptions: [
       { Id: 1, text: "", voteCount: 0 },
@@ -30,26 +30,26 @@ imageUrl: null,
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
 
-  useEffect(() => {
+useEffect(() => {
     if (isOpen) {
       loadCommunities();
       // Reset form when modal opens
-setFormData({ 
-      title: "", 
-      content: "", 
-      community: "", 
-      tags: [], 
-      postType: "text", 
-      imageUrl: null, 
-      linkUrl: "",
-      pollOptions: [
-        { Id: 1, text: "", voteCount: 0 },
-        { Id: 2, text: "", voteCount: 0 }
-      ]
-    });
+      setFormData({ 
+        title: "", 
+        content: "", 
+        community: preSelectedCommunity || "", 
+        tags: [], 
+        postType: "text", 
+        imageUrl: null, 
+        linkUrl: "",
+        pollOptions: [
+          { Id: 1, text: "", voteCount: 0 },
+          { Id: 2, text: "", voteCount: 0 }
+        ]
+      });
       setErrors({});
     }
-  }, [isOpen]);
+  }, [isOpen, preSelectedCommunity]);
 
   const loadCommunities = async () => {
     try {
@@ -307,11 +307,13 @@ return (
         </div>
         
         <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-140px)]">
-          <Select
+<Select
             label="Community"
             value={formData.community}
             onChange={(e) => handleInputChange("community", e.target.value)}
             error={errors.community}
+            required
+            disabled={!!preSelectedCommunity}
           >
             <option value="">Select a community</option>
             {communities.map(community => (

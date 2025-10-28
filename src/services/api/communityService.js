@@ -1,4 +1,6 @@
 import communitiesData from "@/services/mockData/communities.json";
+import React from "react";
+import { create, getAll, getById, search, update } from "@/services/api/postService";
 
 export class CommunityService {
   static communities = [...communitiesData];
@@ -58,7 +60,7 @@ export class CommunityService {
     return community ? { ...community } : null;
   }
 
-  static async create(communityData) {
+static async create(communityData) {
     await this.delay();
     
     const maxId = Math.max(...this.communities.map(c => c.Id), 0);
@@ -67,6 +69,7 @@ export class CommunityService {
       id: `community_${maxId + 1}`,
       name: communityData.name,
       description: communityData.description,
+      icon: communityData.icon || "Users",
       memberCount: communityData.memberCount || 1,
       color: communityData.color || "#FF4500"
     };
@@ -85,7 +88,7 @@ export class CommunityService {
     return { ...this.communities[index] };
   }
 
-  static async delete(id) {
+static async delete(id) {
     await this.delay();
     
     const index = this.communities.findIndex(c => c.Id === parseInt(id));
@@ -93,5 +96,30 @@ export class CommunityService {
     
     this.communities.splice(index, 1);
     return true;
+  }
+
+  static getJoinedCommunities() {
+    const joined = localStorage.getItem('joinedCommunities');
+    return joined ? JSON.parse(joined) : [];
+  }
+
+  static joinCommunity(communityId) {
+    const joined = this.getJoinedCommunities();
+    if (!joined.includes(communityId)) {
+      joined.push(communityId);
+      localStorage.setItem('joinedCommunities', JSON.stringify(joined));
+    }
+  }
+
+  static leaveCommunity(communityId) {
+    const joined = this.getJoinedCommunities();
+    const filtered = joined.filter(id => id !== communityId);
+    localStorage.setItem('joinedCommunities', JSON.stringify(filtered));
+  }
+
+  static isJoined(communityId) {
+    const joined = this.getJoinedCommunities();
+    return joined.includes(communityId);
+  }
 }
 }
